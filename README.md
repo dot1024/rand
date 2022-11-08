@@ -1,5 +1,5 @@
 # rand
-generater for random string
+generator for random string
 
 [![Release](https://img.shields.io/github/v/release/dot1024/rand)](github.com/dot1024/rand/releases)
 [![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
