@@ -1,0 +1,2 @@
+# rand
+random string generator
