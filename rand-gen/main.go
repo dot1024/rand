@@ -27,7 +27,7 @@ var (
 )
 
 func init() {
-	flag.StringVar(&rt, "rt", defRandTyp, "type of random string, options value is 1000, 0100, 0010, 0001")
+	flag.StringVar(&rt, "rt", defRandTyp, "type of random string, as binary number, base value is 1000, 0100, 0010, 0001")
 	flag.IntVar(&rl, "rl", defRandLen, "length of random string")
 	flag.BoolVar(&vb, "vb", false, "show all additional information")
 	flag.Parse()
