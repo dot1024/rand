@@ -1,80 +1,54 @@
 package rand
 
 import (
-	"errors"
-	"fmt"
-	"math/rand"
-	"strings"
-	"time"
+	randv2 "math/rand/v2"
 )
 
 const (
-	TypNum     = 1 << 0 // TypNum source type for numeric characters
-	TypLower   = 1 << 1 // TypLower source type for lowercase letters
-	TypUpper   = 1 << 2 // TypUpper source type for uppercase letters
-	TypSpecial = 1 << 3 // TypSpecial source type for special characters (keyboard visible characters)
-	TypAll     = 1 << 4 // TypAll source type for all of aboving
+	nsrc = "0123456789"                         // numeric characters
+	lsrc = "abcdefghijklmnopqrstuvwxyz"         // lowercase letters
+	usrc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"         // uppercase letters
+	ssrc = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~" // special characters
+	asrc = nsrc + lsrc + usrc + ssrc            // all characters
 )
 
-const (
-	minRandLen = 4      // minRandLen min length for generator
-	maxRandLen = 1 << 8 // maxRandLen max length for generator
-)
+// src source
+type src string
 
-// mapping for source characters
-var ssMap = map[int]string{
-	TypNum:     "0123456789",                         // numeric characters
-	TypLower:   "abcdefghijklmnopqrstuvwxyz",         // lowercase letters
-	TypUpper:   "ABCDEFGHIJKLMNOPQRSTUVWXYZ",         // uppercase letters
-	TypSpecial: "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~", // special characters
+// gen generate random data
+func (s src) gen(b []byte) {
+	if len(s) == 0 {
+		return
+	}
+	if len(b) == 0 {
+		return
+	}
+	for i := range b {
+		b[i] = s[randv2.IntN(len(s))]
+	}
 }
 
-// Gen generate string
-//
-//   - [in] t: random source type, the binary number is option, eg: 1000, 0100, 0010, 0001, 1100 and so on
-//   - [in] l: random string length, the number should belong to closed interval [4, 256] <- [minRandLen, maxRandLen]
-//   - [out] ss: source string
-//   - [out] sv: random string be generated
-//   - [out] err: errors that occurred during program processing
-func Gen(t, l int) (ss string, sv string, err error) {
-	if l < minRandLen || l > maxRandLen {
-		err = fmt.Errorf("random length must be belong to [%d, %d]", minRandLen, maxRandLen)
-		return
-	}
+// GenLetter generate random data using number strings
+func GenNum(b []byte) {
+	src(nsrc).gen(b)
+}
 
-	if t > TypAll {
-		err = errors.New("invalid typ")
-		return
-	}
+// GenLetter generate random data with lower letters
+func GenLower(b []byte) {
+	src(lsrc).gen(b)
+}
 
-	if t&TypNum == TypNum {
-		ss += ssMap[TypNum]
-	}
-	if t&TypLower == TypLower {
-		ss += ssMap[TypLower]
-	}
-	if t&TypUpper == TypUpper {
-		ss += ssMap[TypUpper]
-	}
-	if t&TypSpecial == TypSpecial {
-		ss += ssMap[TypSpecial]
-	}
+// GenLetter generate random data with upper letters
+func GenUpper(b []byte) {
+	src(usrc).gen(b)
+}
 
-	if ss == "" {
-		err = fmt.Errorf("invalid typ: %v", t)
-		return
-	}
+// GenLetter generate random data using letters
+func GenLetter(b []byte) {
+	src(lsrc + usrc).gen(b)
+}
 
-	sl := len(ss)
-
-	sb := strings.Builder{}
-	sb.Grow(l)
-	rand.Seed(time.Now().UnixNano())
-	for i := 0; i < l; i++ {
-		sb.WriteByte(ss[rand.Intn(sl)])
-	}
-
-	sv = sb.String()
-
-	return
+// GenAll generate random data using all of string
+func GenAll(b []byte) {
+	src(asrc).gen(b)
 }
